@@ -45,29 +45,6 @@ def load_users(filename, user_collection):
         print('Error! File not found')
     return True
 
-def save_users(filename, user_collection):
-    '''
-    Saves all users in user_collection into
-    a CSV file
-
-    Requirements:
-    - If there is an existing file, it will
-    overwrite it.
-    - Returns False if there are any errors
-    (such as an invalid filename).
-    - Otherwise, it returns True.
-    '''
-    list_of_dicts = []
-    for i in range(len(user_collection.database)):
-        row = {
-            'USER_ID':list(user_collection.database.values())[i].user_id,
-            'EMAIL':list(user_collection.database.values())[i].email,
-            'NAME':list(user_collection.database.values())[i].user_name,
-            'LASTNAME':list(user_collection.database.values())[i].user_last_name
-        }
-        list_of_dicts.append(row)
-    data_frame = pd.DataFrame(list_of_dicts)
-    data_frame.to_csv(filename, index=False)
 
 def load_status_updates(filename, status_collection):
     '''
@@ -79,18 +56,6 @@ def load_status_updates(filename, status_collection):
       the next.
     - Returns False if there are any errors(such as empty fields in the
       source CSV file)
-    - Otherwise, it returns True.
-    '''
-    pass
-
-
-def save_status_updates(filename, status_collection):
-    '''
-    Saves all statuses in status_collection into a CSV file
-
-    Requirements:
-    - If there is an existing file, it will overwrite it.
-    - Returns False if there are any errors(such an invalid filename).
     - Otherwise, it returns True.
     '''
     pass

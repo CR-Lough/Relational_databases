@@ -89,13 +89,6 @@ def delete_user():
     else:
         print("User was successfully deleted")
 
-@pysnooper.snoop()
-def save_users():
-    '''
-    Saves user database into a file
-    '''
-    filename = input('Enter filename for users file: ')
-    main.save_users(filename, user_collection)
 
 @pysnooper.snoop()
 def add_status():
@@ -148,13 +141,6 @@ def delete_status():
     else:
         print("Status was successfully deleted")
 
-@pysnooper.snoop()
-def save_status():
-    '''
-    Saves status database into a file
-    '''
-    filename = input('Enter filename for status file: ')
-    main.save_status_updates(filename, status_collection)
 
 @pysnooper.snoop()
 def quit_program():
