@@ -189,23 +189,7 @@ def test_load_users(filename, user_collection):
                              ("dave03_00001","dave03","Sunny in Seattle this morning")
                          ]
                         )
-def test_save_users_exists(filename, user_collection, mocker):
-    mocker.patch('os.open')
-    main.save_users(filename, user_collection)
-    os.open.assert_called_once_with(filename)
 
-@pytest.mark.parametrize(
-                         "filename, user_collection",
-                         [
-                             ("data.csv"),
-                             ("dave03.json")
-                         ]
-                        )
-@pytest.mark.usefixtures("usercollection_init")
-def test_save_users_filenotfounderror(filename):
-    with pytest.raises(FileNotFoundError):
-        user_collection_ex = usercollection_init
-        main.save_users(filename, user_collection_ex)
 
 @pytest.fixture
 def statuscollection_init():
@@ -242,16 +226,6 @@ def test_load_status_updates_duplicates(filename):
     new_status_collection = main.load_status_updates(filename, status_collection_ex)
     assert len(new_status_collection) == len(status_collection_ex)
 
-
-@pytest.mark.parametrize("filename, user_collection",
-                         [
-                             ("user_status.csv")
-                         ])
-@pytest.mark.usefixtures("statuscollection_init")
-def test_save_status_updates(filename):
-    status_collection_ex = statuscollection_init
-    main.save_status_updates(filename, status_collection_ex)
-    assert os.open(filename)
 
 @pytest.mark.parametrize(
                          "user_id, email, user_name, user_last_name",
