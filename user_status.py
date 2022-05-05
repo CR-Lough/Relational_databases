@@ -2,8 +2,9 @@
 classes to manage the user status messages
 '''
 # pylint: disable=R0903
+from loguru import logger
 
-
+logger.add("out_{time:YYYY.MM.DD}.log", backtrace=True, diagnose=True)
 class UserStatus():
     '''
     class to hold status message data
@@ -13,16 +14,17 @@ class UserStatus():
         self.status_id = status_id
         self.user_id = user_id
         self.status_text = status_text
-
+    logger.info("New status collection instance created")
 
 class UserStatusCollection():
     '''
     Collection of UserStatus messages
     '''
-
+    @logger.catch(message="error in UserStatusCollection __init__")
     def __init__(self):
         self.database = {}
 
+    @logger.catch(message="error in UserStatusCollection.add_status() method")
     def add_status(self, status_id, user_id, status_text):
         '''
         add a new status message to the collection
@@ -34,6 +36,7 @@ class UserStatusCollection():
         self.database[status_id] = new_status
         return True
 
+    @logger.catch(message="error in UserStatusCollection.modify_status() method")
     def modify_status(self, status_id, user_id, status_text):
         '''
         Modifies a status message
@@ -47,6 +50,7 @@ class UserStatusCollection():
         self.database[status_id].status_text = status_text
         return True
 
+    @logger.catch(message="error in UserStatusCollection.delete_status() method")
     def delete_status(self, status_id):
         '''
         deletes the status message with id, status_id
@@ -57,6 +61,7 @@ class UserStatusCollection():
         del self.database[status_id]
         return True
 
+    @logger.catch(message="error in UserStatusCollection.search_status() method")
     def search_status(self, status_id):
         '''
         Find and return a status message by its status_id

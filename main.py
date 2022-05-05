@@ -1,11 +1,11 @@
 '''
 main driver for a simple social network project
 '''
-
-import users, user_status
 from csv import DictReader
+import users
+import user_status
 import pandas as pd
-    
+
 def init_user_collection():
     '''
     Creates and returns a new instance of UserCollection
@@ -37,8 +37,8 @@ def load_users(filename, user_collection):
     - Otherwise, it returns True.
     '''
     try:
-        with open(filename, mode ='r') as file: 
-            csv_dict_reader = DictReader(file) 
+        with open(filename, mode ='r', encoding='utf-8') as file:
+            csv_dict_reader = DictReader(file)
             for row in csv_dict_reader:
                 user_collection.add_user(row['USER_ID'],row['EMAIL'],row['NAME'],row['LASTNAME'])
     except FileNotFoundError:
@@ -66,9 +66,9 @@ def save_users(filename, user_collection):
             'LASTNAME':list(user_collection.database.values())[i].user_last_name
         }
         list_of_dicts.append(row)
-    df = pd.DataFrame(list_of_dicts)
-    df.to_csv(filename, index=False)
-    
+    data_frame = pd.DataFrame(list_of_dicts)
+    data_frame.to_csv(filename, index=False)
+
 def load_status_updates(filename, status_collection):
     '''
     Opens a CSV file with status data and adds it to an existing
@@ -131,8 +131,8 @@ def delete_user(user_id, user_collection):
     - Returns False if there are any errors (such as user_id not found)
     - Otherwise, it returns True.
     '''
-    user_collection.delete_user(user_id)
-
+    purge_id = user_collection.delete_user(user_id)
+    return purge_id
 
 def search_user(user_id, user_collection):
     '''
@@ -143,7 +143,8 @@ def search_user(user_id, user_collection):
     - If the user is found, returns the corresponding User instance.
     - Otherwise, it returns None.
     '''
-    pass
+    find_user = user_collection.search_user(user_id)
+    return find_user
 
 
 def add_status(user_id, status_id, status_text, status_collection):
@@ -157,7 +158,8 @@ def add_status(user_id, status_id, status_text, status_collection):
       user_collection.add_status() returns False).
     - Otherwise, it returns True.
     '''
-    pass
+    new_status = status_collection.add_status(user_id, status_id, status_text)
+    return new_status
 
 
 def update_status(status_id, user_id, status_text, status_collection):
@@ -168,7 +170,8 @@ def update_status(status_id, user_id, status_text, status_collection):
     - Returns False if there any errors.
     - Otherwise, it returns True.
     '''
-    pass
+    modify_status = status_collection.modify_status(user_id, status_id, status_text)
+    return modify_status
 
 
 def delete_status(status_id, status_collection):
@@ -179,7 +182,8 @@ def delete_status(status_id, status_collection):
     - Returns False if there are any errors (such as status_id not found)
     - Otherwise, it returns True.
     '''
-    pass
+    purge_id = status_collection.delete_status(status_id)
+    return purge_id
 
 
 def search_status(status_id, status_collection):
@@ -191,4 +195,5 @@ def search_status(status_id, status_collection):
     UserStatus instance.
     - Otherwise, it returns None.
     '''
-    pass
+    find_status = status_collection.search_status(status_id)
+    return find_status
