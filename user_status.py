@@ -22,10 +22,9 @@ class UserStatusCollection():
         add a new status message to the collection
         '''
         try:
-            new_user = socialnetwork_model.UsersTable(user_id=user_id, user_email=email,
-                                                    user_name=user_name,
-                                                    user_last_name=user_last_name)
-            new_user.save()
+            new_status = socialnetwork_model.StatusTable(status_id=status_id, user_id=user_id,
+                                status_text=status_text)
+            new_status.save()
             return True
         except IntegrityError:
             logger.exception("NEW EXCEPTION")
@@ -38,23 +37,29 @@ class UserStatusCollection():
 
         The new user_id and status_text are assigned to the existing message
         '''
-        if status_id not in self.database:
-            # Rejects update is the status_id does not exist
+        try:
+            row = socialnetwork_model.StatusTable.get(socialnetwork_model.StatusTable.user_id==status_id)
+            row.user_id = user_id
+            row.status_text = status_text
+
+            row.save()
+            return True
+        except IntegrityError:
+            logger.exception("NEW EXCEPTION")
             return False
-        self.database[status_id].user_id = user_id
-        self.database[status_id].status_text = status_text
-        return True
 
     @logger.catch(message="error in UserStatusCollection.delete_status() method")
     def delete_status(self, status_id):
         '''
         deletes the status message with id, status_id
         '''
-        if status_id not in self.database:
-            # Fails if status does not exist
+        try:
+            row = socialnetwork_model.StatusTable.get(socialnetwork_model.StatusTable.user_id==status_id)
+            row.delete_instance()
+            return True
+        except IntegrityError:
+            logger.exception("NEW EXCEPTION")
             return False
-        del self.database[status_id]
-        return True
 
     @logger.catch(message="error in UserStatusCollection.search_status() method")
     def search_status(self, status_id):
@@ -63,7 +68,10 @@ class UserStatusCollection():
 
         Returns an empty UserStatus object if status_id does not exist
         '''
-        if status_id not in self.database:
-            # Fails if the status does not exist
-            return UserStatus(None, None, None)
-        return self.database[status_id]
+        try:
+            row = socialnetwork_model.StatusTable.get(socialnetwork_model.StatusTable.user_id==status_id)
+            status = row.status_text
+            return status
+        except IntegrityError:
+            logger.exception("NEW EXCEPTION")
+            return False

@@ -22,10 +22,6 @@ class UserCollection():
         Adds a new user to the collection
         '''
         try:
-
-        # if user_id in self.database:
-        #     # Rejects new status if status_id already exists
-        #     return False
             new_user = socialnetwork_model.UsersTable(user_id=user_id, user_email=email,
                                                     user_name=user_name,
                                                     user_last_name=user_last_name)
@@ -34,36 +30,46 @@ class UserCollection():
         except IntegrityError:
             logger.exception("NEW EXCEPTION")
             return False
-   #     self.database[user_id] = new_user
-        # return True
 
     @logger.catch(message="error in UserCollection.modify_user() method")
     def modify_user(self, user_id, email, user_name, user_last_name):
         '''
         Modifies an existing user
         '''
-        if user_id not in self.database:
+        try:
+            row = socialnetwork_model.UsersTable.get(socialnetwork_model.UsersTable.user_id==user_id)
+            row.user_email = email
+            row.user_name = user_name
+            row.user_last_name = user_last_name
+
+            row.save()
+            return True
+        except IntegrityError:
+            logger.exception("NEW EXCEPTION")
             return False
-        self.database[user_id].email = email
-        self.database[user_id].user_name = user_name
-        self.database[user_id].user_last_name = user_last_name
-        return True
 
     @logger.catch(message="error in UserCollection.delete_user() method")
     def delete_user(self, user_id):
         '''
         Deletes an existing user
         '''
-        if user_id not in self.database:
+        try:
+            row = socialnetwork_model.UsersTable.get(socialnetwork_model.UsersTable.user_id==user_id)
+            row.delete_instance()
+            return True
+        except IntegrityError:
+            logger.exception("NEW EXCEPTION")
             return False
-        del self.database[user_id]
-        return True
 
     @logger.catch(message="error in UserCollection.search_user() method")
     def search_user(self, user_id):
         '''
         Searches for user data
         '''
-        if user_id not in self.database:
-            return Users(None, None, None, None)
-        return self.database[user_id]
+        try:
+            row = socialnetwork_model.UsersTable.get(socialnetwork_model.UsersTable.user_id==user_id)
+            user = row.user_id
+            return user
+        except IntegrityError:
+            logger.exception("NEW EXCEPTION")
+            return False
