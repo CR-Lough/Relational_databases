@@ -7,7 +7,7 @@ from loguru import logger
 db = SqliteDatabase('twitter.db')
 
 class UsersTable(Model):
-    user_id = CharField(primary_key=True, max_length=30, unique=True)
+    user_id = CharField(unique=True, max_length=30)
     user_name = CharField(max_length=30)
     user_last_name = CharField(max_length=100)
     user_email = TextField()
@@ -19,7 +19,7 @@ class UsersTable(Model):
                         peewee.Check("LENGTH(user_last_name) < 100")]
 
 class StatusTable(Model):
-    status_id = CharField(primary_key=True, unique=True)
+    status_id = CharField(unique=True)
     user_id = ForeignKeyField(UsersTable, backref='statuses', on_delete='CASCADE')
     status_text = TextField()
 
@@ -84,6 +84,10 @@ def create_tables(database):
 # if __name__ == "__main__":
 #     db.connect()
 #     create_tables(db)
+#     new_user = UsersTable(user_id='1', user_name='bob', user_last_name='murphy', user_email='bm.gmail.com')
+#     new_user.save()  # bob is now stored in the database
+#     newer_user = UsersTable(user_id='1', user_name='bob', user_last_name='murphy', user_email='bm.gmail.com')
+#     newer_user.save()  # bob is now stored in the database
 # #     uncle_bob, grandma, herb = add_data()
 # #     update_data(grandma)
 # #     bob_kitty, herb_fido, herb_mittens, herb_mittens_jr = set_pet_owners()

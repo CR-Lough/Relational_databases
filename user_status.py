@@ -2,19 +2,11 @@
 classes to manage the user status messages
 '''
 # pylint: disable=R0903
+from sqlite3 import IntegrityError
+import socialnetwork_model
 from loguru import logger
 
 logger.add("out_{time:YYYY.MM.DD}.log", backtrace=True, diagnose=True)
-class UserStatus():
-    '''
-    class to hold status message data
-    '''
-
-    def __init__(self, status_id, user_id, status_text):
-        self.status_id = status_id
-        self.user_id = user_id
-        self.status_text = status_text
-    logger.info("New status collection instance created")
 
 class UserStatusCollection():
     '''
@@ -29,12 +21,15 @@ class UserStatusCollection():
         '''
         add a new status message to the collection
         '''
-        if status_id in self.database:
-            # Rejects new status if status_id already exists
+        try:
+            new_user = socialnetwork_model.UsersTable(user_id=user_id, user_email=email,
+                                                    user_name=user_name,
+                                                    user_last_name=user_last_name)
+            new_user.save()
+            return True
+        except IntegrityError:
+            logger.exception("NEW EXCEPTION")
             return False
-        new_status = UserStatus(status_id, user_id, status_text)
-        self.database[status_id] = new_status
-        return True
 
     @logger.catch(message="error in UserStatusCollection.modify_status() method")
     def modify_status(self, status_id, user_id, status_text):

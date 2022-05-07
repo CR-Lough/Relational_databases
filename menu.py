@@ -197,4 +197,4 @@ with logger.catch(message="Because we never know..."):
                 except KeyError:
                     logger.exception("NEW EXCEPTION")
             else:
-                print("Invalid option")
+                print("Invalid option") 

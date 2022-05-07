@@ -2,20 +2,11 @@
 Classes for user information for the social network project
 '''
 # pylint: disable=R0903
+from sqlite3 import IntegrityError
+import socialnetwork_model
 from loguru import logger
 
 logger.add("out_{time:YYYY.MM.DD}.log", backtrace=True, diagnose=True)
-class Users():
-    '''
-    Contains user information
-    '''
-
-    def __init__(self, user_id, email, user_name, user_last_name):
-        self.user_id = user_id
-        self.email = email
-        self.user_name = user_name
-        self.user_last_name = user_last_name
-    logger.info("New user collection instance created")
 
 class UserCollection():
     '''
@@ -30,12 +21,22 @@ class UserCollection():
         '''
         Adds a new user to the collection
         '''
-        if user_id in self.database:
-            # Rejects new status if status_id already exists
+        try:
+
+        # if user_id in self.database:
+        #     # Rejects new status if status_id already exists
+        #     return False
+            new_user = socialnetwork_model.UsersTable(user_id=user_id, user_email=email,
+                                                    user_name=user_name,
+                                                    user_last_name=user_last_name)
+            new_user.save()
+            return True
+        except IntegrityError:
+            logger.exception("NEW EXCEPTION")
             return False
-        new_user = Users(user_id, email, user_name, user_last_name)
-        self.database[user_id] = new_user
-        return True
+   #     self.database[user_id] = new_user
+        # return True
+
     @logger.catch(message="error in UserCollection.modify_user() method")
     def modify_user(self, user_id, email, user_name, user_last_name):
         '''
