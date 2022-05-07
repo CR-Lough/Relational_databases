@@ -1,8 +1,10 @@
 '''
 Provides a basic frontend
 '''
+import os
 import sys
 import main
+from peewee import *
 from loguru import logger
 import pysnooper
 
@@ -14,7 +16,7 @@ def load_users():
     Loads user accounts from a file
     '''
     filename = input('Enter filename of user file: ')
-    main.load_users(filename, user_selection)
+    main.load_users(filename)
 
 @pysnooper.snoop()
 def load_status_updates():
@@ -22,7 +24,7 @@ def load_status_updates():
     Loads status updates from a file
     '''
     filename = input('Enter filename for status file: ')
-    main.load_status_updates(filename, status_collection)
+    main.load_status_updates(filename)
 
 @pysnooper.snoop()
 def add_user():
@@ -151,6 +153,14 @@ def quit_program():
 
 with logger.catch(message="Because we never know..."):
     if __name__ == '__main__':
+        try:
+            os.remove("twitter.db")
+        except FileNotFoundError:
+            logger.info("twitter.db not detected. Creating new file in current directory")
+
+        db = SqliteDatabase('twitter.db')
+        db.connect()
+        main.socialnetwork_model.create_tables(db)
         user_collection = main.init_user_collection()
         status_collection = main.init_status_collection()
         menu_options = {
@@ -160,12 +170,10 @@ with logger.catch(message="Because we never know..."):
             'D': update_user,
             'E': search_user,
             'F': delete_user,
-            'G': save_users,
-            'H': add_status,
-            'I': update_status,
-            'J': search_status,
-            'K': delete_status,
-            'L': save_status,
+            'G': add_status,
+            'H': update_status,
+            'I': search_status,
+            'J': delete_status,
             'Q': quit_program
         }
         while True:
@@ -176,12 +184,10 @@ with logger.catch(message="Because we never know..."):
                                 D: Update user
                                 E: Search user
                                 F: Delete user
-                                G: Save user database to file
-                                H: Add status
-                                I: Update status
-                                J: Search status
-                                K: Delete status
-                                L: Save status database to file
+                                G: Add status
+                                H: Update status
+                                I: Search status
+                                J: Delete status
                                 Q: Quit
 
                                 Please enter your choice: """)

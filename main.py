@@ -4,6 +4,7 @@ main driver for a simple social network project
 from csv import DictReader
 import users
 import user_status
+import socialnetwork_model
 import pandas as pd
 
 def init_user_collection():
@@ -22,7 +23,7 @@ def init_status_collection():
     status = user_status.UserStatusCollection()
     return status
 
-def load_users(filename, user_collection):
+def load_users(filename):
     '''
     Opens a CSV file with user data and
     adds it to an existing instance of
@@ -36,17 +37,15 @@ def load_users(filename, user_collection):
     (such as empty fields in the source CSV file)
     - Otherwise, it returns True.
     '''
-    try:
-        with open(filename, mode ='r', encoding='utf-8') as file:
-            csv_dict_reader = DictReader(file)
-            for row in csv_dict_reader:
-                user_collection.add_user(row['USER_ID'],row['EMAIL'],row['NAME'],row['LASTNAME'])
-    except FileNotFoundError:
-        print('Error! File not found')
-    return True
+    load_dict = (pd.read_csv(filename)).to_dict(orient='records')
+    for row in load_dict:
+        new_user=socialnetwork_model.UsersTable(user_id=row['USER_ID'], user_name=row['NAME'],
+                                user_last_name=row['LASTNAME'], user_email=row['EMAIL'])
+        new_user.save()
+    return load_dict
 
 
-def load_status_updates(filename, status_collection):
+def load_status_updates(filename):
     '''
     Opens a CSV file with status data and adds it to an existing
     instance of UserStatusCollection
@@ -58,7 +57,12 @@ def load_status_updates(filename, status_collection):
       source CSV file)
     - Otherwise, it returns True.
     '''
-    pass
+    load_dict = (pd.read_csv(filename)).to_dict(orient='records')
+    for row in load_dict:
+        new_user=socialnetwork_model.StatusTable(status_id=row['STATUS_ID'], user_id=row['USER_ID'],
+                                status_text=row['STATUS_TEXT'])
+        new_user.save()
+    return load_dict
 
 
 def add_user(user_id, email, user_name, user_last_name, user_collection):
