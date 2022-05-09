@@ -1,8 +1,6 @@
 '''
 main driver for a simple social network project
 '''
-from csv import DictReader
-import string
 import users
 import user_status
 from peewee import chunked

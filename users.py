@@ -68,8 +68,7 @@ class UserCollection():
         '''
         try:
             row = socialnetwork_model.UsersTable.get(socialnetwork_model.UsersTable.user_id==user_id)
-            user = row.user_id
-            return user
+            return row
         except IntegrityError:
             logger.exception("NEW EXCEPTION")
             return False

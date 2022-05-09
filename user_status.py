@@ -54,8 +54,17 @@ class UserStatusCollection():
         deletes the status message with id, status_id
         '''
         try:
-            row = socialnetwork_model.StatusTable.get(socialnetwork_model.StatusTable.user_id==status_id)
-            row.delete_instance()
+            qry = socialnetwork_model.StatusTable.delete().where (socialnetwork_model.StatusTable.status_id==status_id)
+            qry.execute()
+            # query = (socialnetwork_model.StatusTable
+            #         .select(socialnetwork_model.StatusTable.status_id)
+            #         .join(socialnetwork_model.UsersTable)
+            #         .where(socialnetwork_model.StatusTable.status_id == status_id))
+            # # for row in query:
+            # #     temp_status_id = row.status_id
+            # # temp_status_id.delete_instance()
+
+            # socialnetwork_model.StatusTable.delete().where(socialnetwork_model.StatusTable.status_id << query)
             return True
         except IntegrityError:
             logger.exception("NEW EXCEPTION")
@@ -74,7 +83,6 @@ class UserStatusCollection():
                     .select(socialnetwork_model.StatusTable.status_text)
                     .join(socialnetwork_model.UsersTable)
                     .where(socialnetwork_model.StatusTable.status_id == status_id))
-
             for row in query:
                 return row
             # return status
