@@ -69,9 +69,15 @@ class UserStatusCollection():
         Returns an empty UserStatus object if status_id does not exist
         '''
         try:
-            row = socialnetwork_model.StatusTable.get(socialnetwork_model.StatusTable.user_id==status_id)
-            status = row.status_text
-            return status
+            #row = socialnetwork_model.StatusTable.get(socialnetwork_model.StatusTable.user_id==status_id)
+            query = (socialnetwork_model.StatusTable
+                    .select(socialnetwork_model.StatusTable.status_text)
+                    .join(socialnetwork_model.UsersTable)
+                    .where(socialnetwork_model.StatusTable.status_id == status_id))
+
+            for row in query:
+                return row
+            # return status
         except IntegrityError:
             logger.exception("NEW EXCEPTION")
             return False

@@ -20,7 +20,7 @@ class UsersTable(Model):
 
 class StatusTable(Model):
     status_id = CharField(unique=True)
-    user_id = ForeignKeyField(UsersTable, backref='statuses', on_delete='CASCADE')
+    user_id = ForeignKeyField(UsersTable, to_field='user_id', backref='statuses', on_delete='CASCADE')
     status_text = TextField()
 
     class Meta:

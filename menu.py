@@ -6,6 +6,7 @@ import sys
 import main
 from peewee import *
 from loguru import logger
+import socialnetwork_model
 import pysnooper
 
 logger.add("out_{time:YYYY.MM.DD}.log", backtrace=True, diagnose=True)
@@ -24,7 +25,8 @@ def load_status_updates():
     Loads status updates from a file
     '''
     filename = input('Enter filename for status file: ')
-    main.load_status_updates(filename)
+    main.load_statuses(filename)
+   # main.load_statuses(filename)
 
 @pysnooper.snoop()
 def add_user():
@@ -70,7 +72,7 @@ def search_user():
     user_id = input('Enter user ID to search: ')
     result = main.search_user(user_id, user_collection)
  #   try:
-    if not result.user_id:
+    if not result:
         print("ERROR: User does not exist")
     else:
         print(f"User ID: {result.user_id}")
@@ -125,11 +127,11 @@ def search_status():
     '''
     status_id = input('Enter status ID to search: ')
     result = main.search_status(status_id, status_collection)
-    if not result.status_id:
+    if not result:
         print("ERROR: Status does not exist")
     else:
-        print(f"User ID: {result.user_id}")
-        print(f"Status ID: {result.status_id}")
+        # print(f"User ID: {result.user_id}")
+        # print(f"Status ID: {result.status_id}")
         print(f"Status text: {result.status_text}")
 
 @pysnooper.snoop()

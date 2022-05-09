@@ -2,8 +2,10 @@
 main driver for a simple social network project
 '''
 from csv import DictReader
+import string
 import users
 import user_status
+from peewee import chunked
 import socialnetwork_model
 import pandas as pd
 
@@ -13,7 +15,6 @@ def init_user_collection():
     '''
     user = users.UserCollection()
     return user
-
 
 
 def init_status_collection():
@@ -45,7 +46,7 @@ def load_users(filename):
     return load_dict
 
 
-def load_status_updates(filename):
+def load_statuses(filename: str):
     '''
     Opens a CSV file with status data and adds it to an existing
     instance of UserStatusCollection
@@ -57,11 +58,14 @@ def load_status_updates(filename):
       source CSV file)
     - Otherwise, it returns True.
     '''
-    load_dict = (pd.read_csv(filename)).to_dict(orient='records')
-    for row in load_dict:
-        new_user=socialnetwork_model.StatusTable(status_id=row['STATUS_ID'], user_id=row['USER_ID'],
-                                status_text=row['STATUS_TEXT'])
-        new_user.save()
+    load_dict = pd.read_csv(filename)
+    load_dict.columns = load_dict.columns.str.lower()
+    load_dict = load_dict.to_dict(orient='records')
+
+    with socialnetwork_model.db.atomic():
+        for idx in range(0, len(load_dict), 100):
+            socialnetwork_model.StatusTable.insert_many(load_dict[idx:idx+100]).execute()
+    
     return load_dict
 
 
@@ -164,5 +168,8 @@ def search_status(status_id, status_collection):
     UserStatus instance.
     - Otherwise, it returns None.
     '''
+    # query = (socialnetwork_model.StatusTable
+    #      .select(socialnetwork_model.StatusTable)
+    #      .where(socialnetwork_model.StatusTable.status_id == status_id))
     find_status = status_collection.search_status(status_id)
     return find_status
