@@ -130,8 +130,8 @@ def search_status():
     if not result:
         print("ERROR: Status does not exist")
     else:
-        # print(f"User ID: {result.user_id}")
-        # print(f"Status ID: {result.status_id}")
+        print(f"User ID: {result.user_id}")
+        print(f"Status ID: {result.status_id}")
         print(f"Status text: {result.status_text}")
 
 @pysnooper.snoop()
@@ -199,4 +199,4 @@ with logger.catch(message="Because we never know..."):
                 except KeyError:
                     logger.exception("NEW EXCEPTION")
             else:
-                print("Invalid option") 
+                print("Invalid option")

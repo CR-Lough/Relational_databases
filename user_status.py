@@ -10,16 +10,16 @@ logger.add("out_{time:YYYY.MM.DD}.log", backtrace=True, diagnose=True)
 
 class UserStatusCollection():
     '''
-    Collection of UserStatus messages
+    Contains methods to interact with the StatusTable in twitter.db
     '''
     @logger.catch(message="error in UserStatusCollection __init__")
     def __init__(self):
         self.database = {}
 
     @logger.catch(message="error in UserStatusCollection.add_status() method")
-    def add_status(self, status_id, user_id, status_text):
+    def add_status(self, status_id:str, user_id:str, status_text:str):
         '''
-        add a new status message to the collection
+        add a new status message to the database
         '''
         try:
             new_status = socialnetwork_model.StatusTable(status_id=status_id, user_id=user_id,
@@ -31,7 +31,7 @@ class UserStatusCollection():
             return False
 
     @logger.catch(message="error in UserStatusCollection.modify_status() method")
-    def modify_status(self, status_id, user_id, status_text):
+    def modify_status(self, status_id:str, user_id:str, status_text:str):
         '''
         Modifies a status message
 
@@ -49,7 +49,7 @@ class UserStatusCollection():
             return False
 
     @logger.catch(message="error in UserStatusCollection.delete_status() method")
-    def delete_status(self, status_id):
+    def delete_status(self, status_id:str):
         '''
         deletes the status message with id, status_id
         '''
@@ -71,7 +71,7 @@ class UserStatusCollection():
             return False
 
     @logger.catch(message="error in UserStatusCollection.search_status() method")
-    def search_status(self, status_id):
+    def search_status(self, status_id:str):
         '''
         Find and return a status message by its status_id
 
@@ -80,7 +80,10 @@ class UserStatusCollection():
         try:
             #row = socialnetwork_model.StatusTable.get(socialnetwork_model.StatusTable.user_id==status_id)
             query = (socialnetwork_model.StatusTable
-                    .select(socialnetwork_model.StatusTable.status_text)
+                    .select(socialnetwork_model.StatusTable.user_id,
+                            socialnetwork_model.StatusTable.status_id,
+                            socialnetwork_model.StatusTable.status_text        
+                    )
                     .join(socialnetwork_model.UsersTable)
                     .where(socialnetwork_model.StatusTable.status_id == status_id))
             for row in query:

@@ -3,7 +3,6 @@ main driver for a simple social network project
 '''
 import users
 import user_status
-from peewee import chunked
 import socialnetwork_model
 import pandas as pd
 
@@ -22,7 +21,7 @@ def init_status_collection():
     status = user_status.UserStatusCollection()
     return status
 
-def load_users(filename):
+def load_users(filename: str):
     '''
     Opens a CSV file with user data and
     adds it to an existing instance of
@@ -63,11 +62,10 @@ def load_statuses(filename: str):
     with socialnetwork_model.db.atomic():
         for idx in range(0, len(load_dict), 100):
             socialnetwork_model.StatusTable.insert_many(load_dict[idx:idx+100]).execute()
-    
     return load_dict
 
 
-def add_user(user_id, email, user_name, user_last_name, user_collection):
+def add_user(user_id:str, email:str, user_name:str, user_last_name:str, user_collection:object):
     '''
     Creates a new instance of User and stores it in user_collection
     (which is an instance of UserCollection)
@@ -82,7 +80,7 @@ def add_user(user_id, email, user_name, user_last_name, user_collection):
     return new_user
 
 
-def update_user(user_id, email, user_name, user_last_name, user_collection):
+def update_user(user_id:str, email:str, user_name:str, user_last_name:str, user_collection:object):
     '''
     Updates the values of an existing user
 
@@ -94,7 +92,7 @@ def update_user(user_id, email, user_name, user_last_name, user_collection):
     return updated_user
 
 
-def delete_user(user_id, user_collection):
+def delete_user(user_id: str, user_collection: object):
     '''
     Deletes a user from user_collection.
 
@@ -105,7 +103,7 @@ def delete_user(user_id, user_collection):
     purge_id = user_collection.delete_user(user_id)
     return purge_id
 
-def search_user(user_id, user_collection):
+def search_user(user_id: str, user_collection: object):
     '''
     Searches for a user in user_collection(which is an instance of
     UserCollection).
@@ -118,7 +116,7 @@ def search_user(user_id, user_collection):
     return find_user
 
 
-def add_status(user_id, status_id, status_text, status_collection):
+def add_status(user_id: str, status_id: str, status_text: str, status_collection: object):
     '''
     Creates a new instance of UserStatus and stores it in
     user_collection(which is an instance of UserStatusCollection)
@@ -133,7 +131,7 @@ def add_status(user_id, status_id, status_text, status_collection):
     return new_status
 
 
-def update_status(status_id, user_id, status_text, status_collection):
+def update_status(status_id: str, user_id: str, status_text: str, status_collection: object):
     '''
     Updates the values of an existing status_id
 
@@ -145,7 +143,7 @@ def update_status(status_id, user_id, status_text, status_collection):
     return modify_status
 
 
-def delete_status(status_id, status_collection):
+def delete_status(status_id: str, status_collection: object):
     '''
     Deletes a status_id from user_collection.
 
@@ -157,7 +155,7 @@ def delete_status(status_id, status_collection):
     return purge_id
 
 
-def search_status(status_id, status_collection):
+def search_status(status_id: str, status_collection: object):
     '''
     Searches for a status in status_collection
 
