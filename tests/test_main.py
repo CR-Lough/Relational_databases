@@ -5,7 +5,7 @@ import os as os
 from unittest import mock
 import unittest as unittest
 
-from src.hw_one import main, users, user_status
+import main, users, user_status
 
 
 @pytest.mark.parametrize(

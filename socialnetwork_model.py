@@ -5,7 +5,7 @@ import peewee
 from loguru import logger
 
 db = SqliteDatabase('twitter.db')
-
+db.execute_sql('PRAGMA foreign_keys = ON;')
 class UsersTable(Model):
     user_id = CharField(unique=True, max_length=30)
     user_name = CharField(max_length=30)

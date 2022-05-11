@@ -5,7 +5,9 @@ import users
 import user_status
 import socialnetwork_model
 import pandas as pd
+from loguru import logger
 
+logger.add("out_{time:YYYY.MM.DD}.log", backtrace=True, diagnose=True)
 def init_user_collection():
     '''
     Creates and returns a new instance of UserCollection
@@ -35,13 +37,16 @@ def load_users(filename: str):
     (such as empty fields in the source CSV file)
     - Otherwise, it returns True.
     '''
-    load_dict = (pd.read_csv(filename)).to_dict(orient='records')
-    for row in load_dict:
-        new_user=socialnetwork_model.UsersTable(user_id=row['USER_ID'], user_name=row['NAME'],
-                                user_last_name=row['LASTNAME'], user_email=row['EMAIL'])
-        new_user.save()
-    return load_dict
-
+    try:
+        load_dict = (pd.read_csv(filename)).to_dict(orient='records')
+        for row in load_dict:
+            new_user=socialnetwork_model.UsersTable(user_id=row['USER_ID'], user_name=row['NAME'],
+                                    user_last_name=row['LASTNAME'], user_email=row['EMAIL'])
+            new_user.save()
+        return load_dict
+    except FileNotFoundError:
+        logger.exception("NEW EXCEPTION")
+        return False
 
 def load_statuses(filename: str):
     '''
@@ -55,15 +60,18 @@ def load_statuses(filename: str):
       source CSV file)
     - Otherwise, it returns True.
     '''
-    load_dict = pd.read_csv(filename)
-    load_dict.columns = load_dict.columns.str.lower()
-    load_dict = load_dict.to_dict(orient='records')
+    try:
+        load_dict = pd.read_csv(filename)
+        load_dict.columns = load_dict.columns.str.lower()
+        load_dict = load_dict.to_dict(orient='records')
 
-    with socialnetwork_model.db.atomic():
-        for idx in range(0, len(load_dict), 100):
-            socialnetwork_model.StatusTable.insert_many(load_dict[idx:idx+100]).execute()
-    return load_dict
-
+        with socialnetwork_model.db.atomic():
+            for idx in range(0, len(load_dict), 100):
+                socialnetwork_model.StatusTable.insert_many(load_dict[idx:idx+100]).execute()
+        return load_dict
+    except FileNotFoundError:
+        logger.exception("NEW EXCEPTION")
+        return False
 
 def add_user(user_id:str, email:str, user_name:str, user_last_name:str, user_collection:object):
     '''

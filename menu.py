@@ -157,6 +157,9 @@ with logger.catch(message="Because we never know..."):
     if __name__ == '__main__':
         try:
             os.remove("twitter.db")
+        except PermissionError:
+            socialnetwork_model.db.close()
+            os.remove("twitter.db")
         except FileNotFoundError:
             logger.info("twitter.db not detected. Creating new file in current directory")
 
